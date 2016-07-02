@@ -3,6 +3,7 @@ import java.util.*;
 public class BDD
 {
     private List<Instruction> instructionSet = new ArrayList<Instruction>();
+    private List<String> solutionSet = new ArrayList<String>();
 
     public int n;   // number of variables
     public int s;   // number of nodes
@@ -163,10 +164,87 @@ public class BDD
 
     }
 
+    private void printSolutionSet()
+    {
+        for(String solution : solutionSet)
+        {
+            System.out.println(solution);
+        }
+    }
+
     void listBDD ()
     {
         // FOR YOU TO CODE
         // Outputs all solutions, one per line, in format of example below
+
+        // generate list of all possible solutions
+        List<String> possibleSolutions = new ArrayList<String>();
+        for (int i = 0; i < Math.pow(2, n); i++)
+        {
+            String bin = Integer.toBinaryString(i);
+
+            while (bin.length() < n)
+            {
+                bin = "0" + bin;
+            }
+
+            possibleSolutions.add(bin);
+        }
+
+        // for each possible solution
+        for(String solution : possibleSolutions)
+        {
+            // current instruction = BDD root instruction
+            Instruction currentInstr = instructionSet.get(instructionSet.size() - 1);
+
+            int i = 0;
+            // while current route isn't at end of solution
+            while (i < solution.length())
+            {
+                char currentEdge = solution.charAt(i);
+                int targetInstr = 0;
+
+                // determine if the current edge is HI or LO
+                if (currentEdge == '1')
+                {
+                    targetInstr = currentInstr.HI;
+                }
+                else if (currentEdge == '0')
+                {
+                    targetInstr = currentInstr.LO;
+                }
+                // otherwise there was an error in the current solution format
+                else
+                {
+                    System.out.println("Solution format error");
+                    throw new NullPointerException();
+                }
+
+                // if target instruction is true leaf node
+                if(targetInstr == 1)
+                {
+                    // add solution to set of actual solutions
+                    solutionSet.add(solution);
+                    break;
+                }
+                // if target instruction is false leaf node
+                else if(targetInstr == 0)
+                {
+                    break;
+                }
+                // otherwise move the current instruction down the BDD
+                else
+                {
+                    currentInstr = instructionSet.get(targetInstr);
+                }
+
+                // increment current edge
+                i++;
+            }
+        }
+
+        // output the solution set
+        printSolutionSet();
     }
 
     int[] polyBDD ()

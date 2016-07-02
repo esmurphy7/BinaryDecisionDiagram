@@ -32,13 +32,13 @@ public class Main
 
         System.out.println( "count = "+bdd.countBDD() );
 
+        System.out.println( "\nlisting: " );
+        bdd.listBDD();
+
         int[] w = {0,1,-2,-3,4};
         int[] x = bdd.maxBDD( w );
         System.out.print( "max = "+x[0]+" soln = " );
         for (int i=1; i<=bdd.n; ++i) System.out.print( x[i]+" " );
-
-        System.out.println( "\nlisting: " );
-        bdd.listBDD();
 
         System.out.print( "polynomial: " );
         int[] a = bdd.polyBDD();
