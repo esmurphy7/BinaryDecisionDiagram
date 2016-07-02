@@ -48,6 +48,23 @@ public class BDD
         return true;
     }
 
+    private int calculateCountOfLeaf(int v)
+    {
+        int count = 0;
+
+        int numVarsSkipped = this.n - v;
+        if(numVarsSkipped <= 0)
+        {
+            count = 1;
+        }
+        else
+        {
+            count = (int)Math.pow((double)2, (double)numVarsSkipped);
+        }
+
+        return count;
+    }
+
     long countBDD ()
     {
         // FOR YOU TO CODE
@@ -63,6 +80,31 @@ public class BDD
         // make the list readonly since order matters
         countRecords = Collections.unmodifiableList(countRecords);
 
+        // for each leaf instruction
+        for(BDDNodeCountRecord c : countRecords)
+        {
+            // if c's LO and HI both equal 0 or 1 (is a leaf instruction)
+            if(c.instruction.isLeafInstruction())
+            {
+                // c's count is sum of its HI and LO counts
+                int HIcount = 0;
+                if(c.instruction.HI == 1)
+                {
+                    HIcount = calculateCountOfLeaf(c.instruction.V);
+                }
+
+                int LOcount = 0;
+                if(c.instruction.LO == 1)
+                {
+                    LOcount = calculateCountOfLeaf(c.instruction.V);
+                }
+                c.count = HIcount + LOcount;
+
+                // mark c as counted and continue
+                c.hasBeenCounted = true;
+            }
+        }
+
         // until all count records are marked as counted,
         while(!allCountRecordsCounted(countRecords))
         {
@@ -75,28 +117,43 @@ public class BDD
                     continue;
                 }
 
-                // if c's LO and HI both equal 0 or 1 (is a leaf instruction)
-                if(c.instruction.isLeafInstruction())
+                // get c's HI count
+                int HIcount = 0;
+                // if c's HI is a leaf node, calculate how many solutions it contributes
+                if(c.instruction.HI == 1)
                 {
-                    // c's count is sum of its HI and LO counts
-                    c.count = c.instruction.HI + c.instruction.LO;
-
-                    // mark c as counted and continue
-                    c.hasBeenCounted = true;
-                    continue;
+                    HIcount = calculateCountOfLeaf(c.instruction.V);
+                }
+                // otherwise, get the count from c's HI record
+                else
+                {
+                    BDDNodeCountRecord HIrec = countRecords.get(c.instruction.HI);
+                    if(HIrec.hasBeenCounted)
+                    {
+                        HIcount = HIrec.count;
+                    }
                 }
 
-                // if c's HI and LO have been counted
-                BDDNodeCountRecord HIrec = countRecords.get(c.instruction.HI);
-                BDDNodeCountRecord LOrec = countRecords.get(c.instruction.LO);
-                if(HIrec.hasBeenCounted && LOrec.hasBeenCounted)
+                // get c's LO count
+                int LOcount = 0;
+                // if c's LO is a leaf node, calculate how many solutions it contributes
+                if(c.instruction.LO == 1)
                 {
-                    // c's count = sum of c's HI and LO counts
-                    c.count = HIrec.count + LOrec.count;
-
-                    // mark c as counted
-                    c.hasBeenCounted = true;
+                    calculateCountOfLeaf(c.instruction.V);
                 }
+                // otherwise, get the count from c's LO record
+                else
+                {
+                    BDDNodeCountRecord LOrec = countRecords.get(c.instruction.LO);
+                    if(LOrec.hasBeenCounted)
+                    {
+                        LOcount = LOrec.count;
+                    }
+                }
+
+                // set c's count and mark it as counted
+                c.count = HIcount + LOcount;
+                c.hasBeenCounted = true;
             }
         }
 
