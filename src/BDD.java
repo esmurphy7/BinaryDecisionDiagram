@@ -139,7 +139,7 @@ public class BDD
                 // if c's LO is a leaf node, calculate how many solutions it contributes
                 if(c.instruction.LO == 1)
                 {
-                    calculateCountOfLeaf(c.instruction.V);
+                    LOcount = calculateCountOfLeaf(c.instruction.V);
                 }
                 // otherwise, get the count from c's LO record
                 else
