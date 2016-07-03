@@ -259,7 +259,83 @@ public class BDD
     {
         // FOR YOU TO CODE
         // Maximizes a linear function, put the max value at index location 0.
-        return null;
+
+        // ensure that there is exactly one w for each binary variable
+        if(w.length != n)
+        {
+            System.out.println(String.format("There must be exactly one w coefficient for each of the %d binary variables (there are %d)", n, w.length));
+            return new int[0];
+        }
+
+        // B1
+        // initialize W set
+        int[] W = new int[n+1];
+        W[n] = 0;
+
+        for(int i = n-1; i >= 0; i--)
+        {
+            W[i] = W[i+1] + Math.max(w[i], 0);
+        }
+
+        // B2
+        // initialize m
+        int[] m = new int[s-1];
+        m[0] = 0;
+
+        // initialize t
+        int[] t = new int[s-1];
+        t[0] = 0;
+
+        // process k instructions
+        for(int k = 1; k < s-1; k++)
+        {
+            // B3
+            Instruction kthInstr = instructionSet.get(k+1);
+            int v = kthInstr.V;
+            int l = kthInstr.LO;
+            int h = kthInstr.HI;
+
+            if(l != 0)
+            {
+                m[k] = m[l-1] + W[v] - W[instructionSet.get(l).V-1];
+            }
+
+            int tempM = 0;
+            if(h != 0)
+            {
+                tempM = m[h-1] + W[v] - W[instructionSet.get(h).V-1] + w[v-1];
+            }
+
+            if(l == 0 || tempM > m[k])
+            {
+                m[k] = tempM;
+                t[k] = 1;
+            }
+        }
+
+        // B4
+        // initialize maximizing vector x
+        int[] x = new int[n];
+        int j = -1;
+        int k = s-1;
+
+        do {
+            while(j < instructionSet.get(k).V - 2)
+            {
+                j++;
+                x[j] = (w[j] > 0) ? 1 : 0;
+            }
+
+            if(k > 1)
+            {
+                j++;
+                x[j] = t[k-1];
+                k = (t[k-1] == 0) ? instructionSet.get(k).LO : instructionSet.get(k).HI;
+            }
+        } while(j < n-1);
+
+        // return maximizing binary vector x
+        return x;
     }
 
 }
