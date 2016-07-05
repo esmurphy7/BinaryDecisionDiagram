@@ -334,8 +334,21 @@ public class BDD
             }
         } while(j < n-1);
 
-        // return maximizing binary vector x
-        return x;
+        // include the sum of the maximizing binary vector in the first index of x
+        int sum = 0;
+        for(int i=0; i<x.length; i++)
+        {
+            sum += x[i] * w[i];
+        }
+        int[] maxX = new int[x.length+1];
+        maxX[0] = sum;
+        for (int i=0; i<x.length; i++)
+        {
+            maxX[i+1] = x[i];
+        }
+
+        // return maximizing binary vector with sum at beginning
+        return maxX;
     }
 
 }

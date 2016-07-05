@@ -38,7 +38,7 @@ public class Main
         int[] w = {1,-2,-3,4};
         int[] x = bdd.maxBDD( w );
         System.out.print( "max = "+x[0]+" soln = " );
-        for (int i=1; i < bdd.n; i++)
+        for (int i=1; i <= bdd.n; i++)
         {
             System.out.print( x[i]+" " );
         }
