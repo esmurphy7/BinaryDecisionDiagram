@@ -1,3 +1,4 @@
+import javax.lang.model.element.Element;
 import java.util.*;
 
 public class BDD
@@ -252,7 +253,41 @@ public class BDD
         // FOR YOU TO CODE
         // Outputs the coefficients of the generating function (a polynomial)
         // E.g., (19) in the text.
-        return null;
+
+        // initialize 1s count map
+        Map<Integer, Integer> numOfOneOccurances = new HashMap<Integer, Integer>();
+        // for each solution
+        for(String solution : solutionSet)
+        {
+            // count the number of 1s in the solution
+            int count = solution.length() - solution.replace("1", "").length();
+
+            // increment the dictionary that tracks the overall count
+            if(numOfOneOccurances.get(count) == null)
+            {
+                numOfOneOccurances.put(count, 1);
+            }
+            else
+            {
+                numOfOneOccurances.put(count, numOfOneOccurances.get(count) + 1);
+            }
+        }
+
+        // return the polynomials as an int array
+        int[] polys = new int[n+1];
+        for(int i=0; i<polys.length; i++)
+        {
+            if(numOfOneOccurances.get(i) == null)
+            {
+                polys[i] = 0;
+            }
+            else
+            {
+                polys[i] = numOfOneOccurances.get(i);
+            }
+        }
+
+        return polys;
     }
 
     int[] maxBDD ( int[] w )

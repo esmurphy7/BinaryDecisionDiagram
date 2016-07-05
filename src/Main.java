@@ -46,7 +46,7 @@ public class Main
 
         System.out.print( "polynomial: " );
         int[] a = bdd.polyBDD();
-        for (int i=0; i < bdd.n-1; i++)
+        for (int i=0; i <= bdd.n; i++)
         {
             System.out.print( a[i]+" " );
         }
